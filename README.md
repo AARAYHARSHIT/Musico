@@ -7,8 +7,9 @@ Musico is a modern AMOLED-styled music search/player website built with Next.js 
 - Dark AMOLED UI with transparent hover interactions
 - Search input with instant result cards
 - Multi-source playback:
-  - YouTube embeds when Brave/YouTube APIs are configured
-  - Public iTunes song previews without API keys
+  - YouTube embeds with API-key search (`YOUTUBE_API_KEY`)
+  - Public YouTube web-search fallback (no key) for full video playback
+  - Optional iTunes 30s previews only when explicitly enabled
 - Server-side search route with:
   - Brave Search API (for YouTube result discovery)
   - YouTube Data API fallback
@@ -33,8 +34,12 @@ cp .env.example .env.local
 - `BRAVE_SEARCH_API_KEY`
 - `YOUTUBE_API_KEY`
 
-If keys are not provided, the app still works through the public iTunes Search API.
-If `YOUTUBE_API_KEY` is set, Musico prioritizes YouTube playback (full video tracks) over iTunes previews.
+By default, Musico returns YouTube tracks only (full video playback), using:
+1. YouTube Data API (if key provided)
+2. Public YouTube web-search fallback
+3. Brave YouTube search (if Brave key provided)
+
+If you explicitly set `ALLOW_PREVIEW_FALLBACK=true`, it can fall back to iTunes 30-second previews.
 
 4. Start development:
 
