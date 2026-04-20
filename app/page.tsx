@@ -37,7 +37,7 @@ export default function Home() {
       }
 
       setTracks(payload.tracks);
-      setActiveTrack((current) => current ?? payload.tracks?.[0] ?? null);
+      setActiveTrack(payload.tracks[0] ?? null);
     } catch (searchError) {
       setTracks([]);
       setActiveTrack(null);

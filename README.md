@@ -34,6 +34,7 @@ cp .env.example .env.local
 - `YOUTUBE_API_KEY`
 
 If keys are not provided, the app still works through the public iTunes Search API.
+If `YOUTUBE_API_KEY` is set, Musico prioritizes YouTube playback (full video tracks) over iTunes previews.
 
 4. Start development:
 

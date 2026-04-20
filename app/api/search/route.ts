@@ -197,22 +197,24 @@ export async function GET(request: NextRequest) {
   try {
     let tracks: Track[] = [];
 
-    if (braveApiKey) {
-      tracks = await searchWithBrave(query, braveApiKey);
-    }
-
-    if (!tracks.length && youtubeApiKey) {
+    if (youtubeApiKey) {
       tracks = await searchWithYouTube(query, youtubeApiKey);
     }
 
-    if (!tracks.length) {
+    if (!tracks.length && braveApiKey) {
+      tracks = await searchWithBrave(query, braveApiKey);
+    }
+
+    if (!tracks.length && !youtubeApiKey && !braveApiKey) {
       tracks = await searchWithITunes(query);
     }
 
     if (!tracks.length) {
       return NextResponse.json(
         {
-          error: "No results found. Try another query."
+          error: youtubeApiKey
+            ? "No embeddable YouTube tracks found for this query. Try another one."
+            : "No results found. Try another query."
         },
         { status: 404 }
       );
