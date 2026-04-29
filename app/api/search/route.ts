@@ -133,6 +133,96 @@ const searchWithYouTube = async (query: string, apiKey: string): Promise<Track[]
     .filter((item): item is Track => Boolean(item));
 };
 
+const collectVideoRenderers = (node: unknown, acc: Array<Record<string, unknown>>) => {
+  if (!node || typeof node !== "object") {
+    return;
+  }
+
+  if (Array.isArray(node)) {
+    node.forEach((item) => collectVideoRenderers(item, acc));
+    return;
+  }
+
+  const objectNode = node as Record<string, unknown>;
+  if (objectNode.videoRenderer && typeof objectNode.videoRenderer === "object") {
+    acc.push(objectNode.videoRenderer as Record<string, unknown>);
+  }
+
+  Object.values(objectNode).forEach((value) => collectVideoRenderers(value, acc));
+};
+
+const searchWithYouTubeWeb = async (query: string): Promise<Track[]> => {
+  const response = await fetch(
+    `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D`,
+    {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+      },
+      next: { revalidate: 0 }
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`YouTube web search failed with ${response.status}`);
+  }
+
+  const html = await response.text();
+  const initialDataMatch =
+    html.match(/var ytInitialData = (\{.*?\});<\/script>/s) ??
+    html.match(/ytInitialData"\s*:\s*(\{.*?\})\s*,\s*"ytInitialPlayerResponse"/s);
+
+  if (!initialDataMatch?.[1]) {
+    return [];
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(initialDataMatch[1]);
+  } catch {
+    return [];
+  }
+
+  const videoRenderers: Array<Record<string, unknown>> = [];
+  collectVideoRenderers(parsed, videoRenderers);
+
+  return videoRenderers
+    .slice(0, 18)
+    .map((video) => {
+      const id = typeof video.videoId === "string" ? video.videoId : null;
+      if (!id) {
+        return null;
+      }
+
+      const titleRuns =
+        (video.title as { runs?: Array<{ text?: string }> } | undefined)?.runs ?? [];
+      const title =
+        titleRuns.map((run) => run.text ?? "").join("").trim() || "Untitled Track";
+
+      const channel =
+        (video.ownerText as { runs?: Array<{ text?: string }> } | undefined)?.runs?.[0]?.text ??
+        "YouTube";
+
+      const thumbnailList =
+        (video.thumbnail as { thumbnails?: Array<{ url?: string }> } | undefined)?.thumbnails ??
+        [];
+      const thumbnail =
+        thumbnailList[thumbnailList.length - 1]?.url ??
+        `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+
+      return {
+        id,
+        title,
+        channel,
+        thumbnail,
+        sourceUrl: `https://www.youtube.com/watch?v=${id}`,
+        mediaType: "video" as const,
+        embedUrl: `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`
+      };
+    })
+    .filter((item): item is Track => Boolean(item));
+};
+
 const searchWithITunes = async (query: string): Promise<Track[]> => {
   const params = new URLSearchParams({
     term: query,
@@ -193,26 +283,32 @@ export async function GET(request: NextRequest) {
 
   const braveApiKey = process.env.BRAVE_SEARCH_API_KEY;
   const youtubeApiKey = process.env.YOUTUBE_API_KEY;
+  const allowPreviewFallback = process.env.ALLOW_PREVIEW_FALLBACK === "true";
 
   try {
     let tracks: Track[] = [];
 
-    if (braveApiKey) {
-      tracks = await searchWithBrave(query, braveApiKey);
-    }
-
-    if (!tracks.length && youtubeApiKey) {
+    if (youtubeApiKey) {
       tracks = await searchWithYouTube(query, youtubeApiKey);
     }
 
     if (!tracks.length) {
+      tracks = await searchWithYouTubeWeb(query);
+    }
+
+    if (!tracks.length && braveApiKey) {
+      tracks = await searchWithBrave(query, braveApiKey);
+    }
+
+    if (!tracks.length && allowPreviewFallback) {
       tracks = await searchWithITunes(query);
     }
 
     if (!tracks.length) {
       return NextResponse.json(
         {
-          error: "No results found. Try another query."
+          error:
+            "No YouTube tracks found for this query. Add/verify YOUTUBE_API_KEY (and optionally BRAVE_SEARCH_API_KEY), or set ALLOW_PREVIEW_FALLBACK=true to use 30-second previews."
         },
         { status: 404 }
       );
