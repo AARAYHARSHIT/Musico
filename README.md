@@ -1,12 +1,54 @@
-# Musico
+# Musico 🎵
 
-A multi-source music discovery platform built with Next.js and TypeScript.
+A modern music discovery platform built using Next.js and TypeScript.
 
-Features:
-- YouTube search
-- Brave Search fallback
-- Embedded playback
-- Responsive UI
+## Features
 
-Live Demo:
-[musico-ashen.vercel.app](https://musico-ashen.vercel.app/)
+* Instant music search
+* YouTube-powered results
+* Responsive modern UI
+* Embedded playback
+* Fast server-side search API
+* Vercel cloud deployment
+
+## Tech Stack
+
+* Next.js
+* React
+* TypeScript
+* YouTube Data API
+* Brave Search API
+* Vercel
+
+## Live Demo
+
+https://musico-ashen.vercel.app/
+
+## Installation
+
+git clone <repository-url>
+
+npm install
+
+npm run dev
+
+## Environment Variables
+
+YOUTUBE_API_KEY=your_key
+
+BRAVE_SEARCH_API_KEY=your_key
+
+ALLOW_PREVIEW_FALLBACK=false
+
+## Future Improvements
+
+* User authentication
+* Playlists
+* Favorites
+* Listening history
+* Recommendation engine
+
+## Author
+
+Harshit Pathak
+
