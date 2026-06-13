@@ -1,6 +1,6 @@
 # Musico 🎵
 
-A modern music discovery platform built using Next.js and TypeScript.
+A modern music discovery platform built with Next.js and TypeScript featuring YouTube-powered search, instant playback, responsive UI, and cloud deployment.
 
 ## Features
 
