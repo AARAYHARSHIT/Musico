@@ -30,7 +30,7 @@ https://musico-ashen.vercel.app/
 
 ## Search Results
 
-![Search Results](./screenshots/search-results.png)
+![Search Results](Screenshots/search-results.png)
 
 ## Player View
 
