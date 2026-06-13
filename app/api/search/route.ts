@@ -71,7 +71,7 @@ const searchWithBrave = async (query: string, apiKey: string): Promise<Track[]> 
         embedUrl: `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`
       };
     })
-    .filter((item): item is Track => Boolean(item));
+    .filter((item) => item !== null) as Track[];
 
   return tracks;
 };
@@ -130,7 +130,7 @@ const searchWithYouTube = async (query: string, apiKey: string): Promise<Track[]
         embedUrl: `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`
       };
     })
-    .filter((item): item is Track => Boolean(item));
+    .filter((item) => item!== null)as Track[];
 };
 
 const collectVideoRenderers = (node: unknown, acc: Array<Record<string, unknown>>) => {
@@ -220,7 +220,7 @@ const searchWithYouTubeWeb = async (query: string): Promise<Track[]> => {
         embedUrl: `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`
       };
     })
-    .filter((item): item is Track => Boolean(item));
+    .filter((item) => item!== null) as Track[];
 };
 
 const searchWithITunes = async (query: string): Promise<Track[]> => {
@@ -271,7 +271,7 @@ const searchWithITunes = async (query: string): Promise<Track[]> => {
         audioUrl: item.previewUrl
       };
     })
-    .filter((item): item is Track => Boolean(item));
+    .filter((item) => item!== null) as Track[];
 };
 
 export async function GET(request: NextRequest) {
