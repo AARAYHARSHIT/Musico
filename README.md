@@ -24,8 +24,10 @@ A modern music discovery platform built using Next.js and TypeScript.
 
 https://musico-ashen.vercel.app/
 
-##Screenshots
-###Homepage
+## Screenshots
+
+### Homepage
+
 ![Homepage](Screenshots/homepage.png)
 
 ## Search Results
