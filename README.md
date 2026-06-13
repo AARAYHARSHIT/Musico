@@ -26,7 +26,7 @@ https://musico-ashen.vercel.app/
 
 ##Screenshots
 ###Homepage
-![Homepage](./screenshots/homepage.png)
+![Homepage](Screenshots/homepage.png)
 
 ## Search Results
 
