@@ -34,7 +34,7 @@ https://musico-ashen.vercel.app/
 
 ## Player View
 
-![Player View](./screenshots/player-view.png)
+![Player View](Screenshots/player-view.png)
 
 ## Installation
 
